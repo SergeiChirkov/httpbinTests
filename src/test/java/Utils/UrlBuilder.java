@@ -8,10 +8,12 @@ public class UrlBuilder {
 	private String host;
 	private String path;
 	private AuthMethods authMethod;
+	private String algorithm;
 
 	public UrlBuilder() {
 		scheme = "http://";
 		host = "httpbin.org/";
+		algorithm = "";
 	}
 
 	public UrlBuilder(AuthMethods authMethod) {
@@ -24,7 +26,12 @@ public class UrlBuilder {
 		return this;
 	}
 
+	public UrlBuilder setAlgorithm(String algorithm) {
+		this.algorithm = "/" + algorithm;
+		return this;
+	}
+
 	public String build() {
-		return scheme + host + path;
+		return scheme + host + path + algorithm;
 	}
 }

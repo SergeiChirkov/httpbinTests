@@ -4,6 +4,7 @@ import org.junit.Assert;
 
 import Logging.Logger;
 import Sources.Accounts.Accounts;
+import Sources.Algorithms;
 import Sources.Methods.AuthMethods;
 import Sources.RequestTypes;
 import Sources.Statuses.Statuses;
@@ -31,7 +32,9 @@ public class AuthStepDefs {
 
 	@Given("^I generate basic auth paths$")
 	public void givenIGenerateBasicAuthPath() {
-		AuthMethods.BASIC.setValidPath(String.format("/%s/%s", Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
+		AuthMethods.BASIC.setValidPath(String.format("/%s/%s",
+				Accounts.CORRECT.getUsername(),
+				Accounts.CORRECT.getPassword()));
 		AuthMethods.BASIC.setInvalidPath("/");
 	}
 
@@ -57,6 +60,22 @@ public class AuthStepDefs {
 	@When("^I make digest-auth (.*) request with (.*) credentials$")
 	public void whenIMakeDigestAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
 		String url = new UrlBuilder(AuthMethods.DIGEST_AUTH).setPath(requestType).build();
+
+		Logger.info.accept(String.format("Navigate to URL [%s]", url));
+
+		savedStatusCode = RestAssured
+				.given().auth().digest(account.getUsername(), account.getPassword())
+				.when().get(url).statusCode();
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+	}
+
+	@When("^I make digest-auth (.*) request with (.*) credentials and (.*) algorithm$")
+	public void whenIMakeDigestAuthRequestWithCredentialsAndAlgorithm(RequestTypes requestType, Accounts account, Algorithms algorithm) {
+		String url = new UrlBuilder(AuthMethods.DIGEST_AUTH)
+				.setPath(requestType)
+				.setAlgorithm(algorithm.getAlgorithm())
+				.build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
