@@ -1,0 +1,21 @@
+2020-06-05 21:47:26:815 +0400 INFO Logging.Logger - User with username [a1eqgxbwh2kethovigt] and password [hbmgm6kyaxcqr] has been generated
+2020-06-05 21:47:26:817 +0400 INFO Logging.Logger - Navigate to URL [http://httpbin.org/basic-auth/a1eqgxbwh2kethovigt/hbmgm6kyaxcqr]
+2020-06-05 21:47:28:216 +0400 INFO Logging.Logger - Status code [200] has been saved
+2020-06-05 21:47:28:217 +0400 INFO Logging.Logger - Saved Status Code has been reset to [0]
+2020-06-05 21:47:28:220 +0400 INFO Logging.Logger - User with username [dkrzm6] and password [mvwufbwoyoqvpowhvxr] has been generated
+2020-06-05 21:47:28:220 +0400 INFO Logging.Logger - Navigate to URL [http://httpbin.org/basic-auth/dkrzm6/mvwufbwoyoqvpowhvxr]
+2020-06-05 21:47:28:708 +0400 INFO Logging.Logger - Status code [401] has been saved
+2020-06-05 21:47:28:709 +0400 INFO Logging.Logger - Saved Status Code has been reset to [0]
+2020-06-05 21:47:28:712 +0400 INFO Logging.Logger - User with username [8n8mmouk3m] and password [cp6djktmgv7] has been generated
+2020-06-05 21:47:28:712 +0400 INFO Logging.Logger - Navigate to URL [http://httpbin.org/basic-auth/]
+2020-06-05 21:47:29:039 +0400 INFO Logging.Logger - Status code [404] has been saved
+2020-06-05 21:47:29:039 +0400 INFO Logging.Logger - Saved Status Code has been reset to [0]
+2020-06-05 21:47:29:040 +0400 INFO Logging.Logger - Navigate to URL [http://httpbin.org/bearer]
+2020-06-05 21:47:29:371 +0400 INFO Logging.Logger - Status code [200] has been saved
+2020-06-05 21:47:29:371 +0400 INFO Logging.Logger - Saved Status Code has been reset to [0]
+2020-06-05 21:47:29:373 +0400 INFO Logging.Logger - Navigate to URL [http://httpbin.org/bearer]
+2020-06-05 21:47:29:674 +0400 INFO Logging.Logger - Status code [401] has been saved
+2020-06-05 21:47:29:675 +0400 INFO Logging.Logger - Saved Status Code has been reset to [0]
+2020-06-05 21:47:29:677 +0400 INFO Logging.Logger - Navigate to URL [http://httpbin.org/bearer/]
+2020-06-05 21:47:29:996 +0400 INFO Logging.Logger - Status code [404] has been saved
+2020-06-05 21:47:29:997 +0400 INFO Logging.Logger - Saved Status Code has been reset to [0]
