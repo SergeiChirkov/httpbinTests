@@ -56,3 +56,35 @@ Examples:
 | INVALID         | INVALID | MD5       | ERROR   |
 | INVALID         | INVALID | SHA256    | ERROR   |
 | INVALID         | INVALID | SHA512    | ERROR   |
+
+@DigestAuthHardTest
+Scenario Outline: Test /digest-auth/{qop}/{user}/{passwd}/{algorithm}/{stale_after}
+Given I generate correct credentials
+And I generate digest-auth paths
+When I make digest-auth <type> request with <credentialsType> credentials, <algorithm> algorithm and NEVER stale-after
+Then I see that request <status>
+
+Examples:
+| credentialsType | type    | algorithm | status  |
+| CORRECT         | VALID   | MD5       | SUCCESS |
+| CORRECT         | VALID   | SHA256    | SUCCESS |
+| CORRECT         | VALID   | SHA512    | SUCCESS |
+| INCORRECT       | VALID   | MD5       | FAIL    |
+| INCORRECT       | VALID   | SHA256    | FAIL    |
+| INCORRECT       | VALID   | SHA512    | FAIL    |
+| INVALID         | INVALID | MD5       | ERROR   |
+| INVALID         | INVALID | SHA256    | ERROR   |
+| INVALID         | INVALID | SHA512    | ERROR   |
+
+@HiddenBasicAuthTest
+Scenario Outline: Test /hidden-basic-auth/{user}/{passwd}
+Given I generate correct credentials
+And I generate hidden-basic auth paths
+When I make hidden basic auth <type> request with <credentialsType> credentials
+Then I see that request <status>
+
+Examples:
+| credentialsType | type    | status  |
+| CORRECT         | VALID   | SUCCESS |
+| INCORRECT       | VALID   | ERROR   |
+| INVALID         | INVALID | ERROR   |

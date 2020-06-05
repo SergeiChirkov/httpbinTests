@@ -9,11 +9,13 @@ public class UrlBuilder {
 	private String path;
 	private AuthMethods authMethod;
 	private String algorithm;
+	private String staleAfter;
 
 	public UrlBuilder() {
 		scheme = "http://";
 		host = "httpbin.org/";
 		algorithm = "";
+		staleAfter = "";
 	}
 
 	public UrlBuilder(AuthMethods authMethod) {
@@ -31,7 +33,12 @@ public class UrlBuilder {
 		return this;
 	}
 
+	public UrlBuilder setStaleAfter(String staleAfter) {
+		this.staleAfter = staleAfter;
+		return this;
+	}
+
 	public String build() {
-		return scheme + host + path + algorithm;
+		return scheme + host + path + algorithm + staleAfter;
 	}
 }

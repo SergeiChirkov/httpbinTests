@@ -1,5 +1,7 @@
 package StepDefs;
 
+import java.util.function.Supplier;
+
 import org.junit.Assert;
 
 import Logging.Logger;
@@ -7,6 +9,7 @@ import Sources.Accounts.Accounts;
 import Sources.Algorithms;
 import Sources.Methods.AuthMethods;
 import Sources.RequestTypes;
+import Sources.StaleAfters;
 import Sources.Statuses.Statuses;
 import Utils.StringUtils;
 import Utils.UrlBuilder;
@@ -30,18 +33,27 @@ public class AuthStepDefs {
 				Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
 	}
 
+	private Supplier<String> basicValidPath = () ->
+			String.format("/%s/%s", Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword());
+
+	private Supplier<String> basicInvalidPath = () -> "/";
+
 	@Given("^I generate basic auth paths$")
 	public void givenIGenerateBasicAuthPath() {
-		AuthMethods.BASIC.setValidPath(String.format("/%s/%s",
-				Accounts.CORRECT.getUsername(),
-				Accounts.CORRECT.getPassword()));
-		AuthMethods.BASIC.setInvalidPath("/");
+		AuthMethods.BASIC.setValidPath(basicValidPath.get());
+		AuthMethods.BASIC.setInvalidPath(basicInvalidPath.get());
+	}
+
+	@Given("^I generate hidden-basic auth paths$")
+	public void givenIGenerateHiddenBasicAuthPath() {
+		AuthMethods.HIDDEN_BASIC.setValidPath(basicValidPath.get());
+		AuthMethods.HIDDEN_BASIC.setInvalidPath(basicInvalidPath.get());
 	}
 
 	@Given("^I generate digest-auth paths$")
 	public void givenIGenerateDigestAuthAuthPath() {
-		AuthMethods.DIGEST_AUTH.setValidPath(String.format("/%s/%s/%s", Accounts.CORRECT.getQop(), Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
-		AuthMethods.DIGEST_AUTH.setInvalidPath("/");
+		AuthMethods.DIGEST.setValidPath(String.format("/%s/%s/%s", Accounts.CORRECT.getQop(), Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
+		AuthMethods.DIGEST.setInvalidPath("/");
 	}
 
 	@When("^I make basic auth (.*) request with (.*) credentials$")
@@ -59,7 +71,7 @@ public class AuthStepDefs {
 
 	@When("^I make digest-auth (.*) request with (.*) credentials$")
 	public void whenIMakeDigestAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
-		String url = new UrlBuilder(AuthMethods.DIGEST_AUTH).setPath(requestType).build();
+		String url = new UrlBuilder(AuthMethods.DIGEST).setPath(requestType).build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
@@ -72,7 +84,7 @@ public class AuthStepDefs {
 
 	@When("^I make digest-auth (.*) request with (.*) credentials and (.*) algorithm$")
 	public void whenIMakeDigestAuthRequestWithCredentialsAndAlgorithm(RequestTypes requestType, Accounts account, Algorithms algorithm) {
-		String url = new UrlBuilder(AuthMethods.DIGEST_AUTH)
+		String url = new UrlBuilder(AuthMethods.DIGEST)
 				.setPath(requestType)
 				.setAlgorithm(algorithm.getAlgorithm())
 				.build();
@@ -81,6 +93,36 @@ public class AuthStepDefs {
 
 		savedStatusCode = RestAssured
 				.given().auth().digest(account.getUsername(), account.getPassword())
+				.when().get(url).statusCode();
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+	}
+
+	@When("^I make digest-auth (.*) request with (.*) credentials, (.*) algorithm and (.*) stale-after$")
+	public void whenIMakeDigestAuthRequestWithCredentialsAlgorithmAndStaleAfter(RequestTypes requestType, Accounts account, Algorithms algorithm, StaleAfters staleAfter) {
+		String url = new UrlBuilder(AuthMethods.DIGEST)
+				.setPath(requestType)
+				.setAlgorithm(algorithm.getAlgorithm())
+				.setStaleAfter(staleAfter.name().toLowerCase())
+				.build();
+
+		Logger.info.accept(String.format("Navigate to URL [%s]", url));
+
+		savedStatusCode = RestAssured
+				.given().auth().digest(account.getUsername(), account.getPassword())
+				.when().get(url).statusCode();
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+	}
+
+	@When("^I make hidden basic auth (.*) request with (.*) credentials$")
+	public void whenIMakeHiddenBasicAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
+		String url = new UrlBuilder(AuthMethods.HIDDEN_BASIC).setPath(requestType).build();
+
+		Logger.info.accept(String.format("Navigate to URL [%s]", url));
+
+		savedStatusCode = RestAssured
+				.given().auth().preemptive().basic(account.getUsername(), account.getPassword())
 				.when().get(url).statusCode();
 
 		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
