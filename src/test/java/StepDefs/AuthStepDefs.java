@@ -23,6 +23,7 @@ public class AuthStepDefs {
 		Accounts.CORRECT.setUsername(StringUtils.randomString.get());
 		Accounts.CORRECT.setPassword(StringUtils.randomString.get());
 		Accounts.CORRECT.setBearerToken(StringUtils.randomString.get());
+		Accounts.CORRECT.setQop(StringUtils.randomString.get());
 
 		Logger.info.accept(String.format("User with username [%s] and password [%s] has been generated",
 				Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
@@ -34,7 +35,13 @@ public class AuthStepDefs {
 		AuthMethods.BASIC.setInvalidPath("/");
 	}
 
-	@When("^I make basic auth (\\S+) request with (.*) credentials$")
+	@Given("^I generate digest-auth paths$")
+	public void givenIGenerateDigestAuthAuthPath() {
+		AuthMethods.DIGEST_AUTH.setValidPath(String.format("/%s/%s/%s", Accounts.CORRECT.getQop(), Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
+		AuthMethods.DIGEST_AUTH.setInvalidPath("/");
+	}
+
+	@When("^I make basic auth (.*) request with (.*) credentials$")
 	public void whenIMakeBasicAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
 		String url = new UrlBuilder(AuthMethods.BASIC).setPath(requestType).build();
 
@@ -42,6 +49,19 @@ public class AuthStepDefs {
 
 		savedStatusCode = RestAssured
 				.given().auth().basic(account.getUsername(), account.getPassword())
+				.when().get(url).statusCode();
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+	}
+
+	@When("^I make digest-auth (.*) request with (.*) credentials$")
+	public void whenIMakeDigestAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
+		String url = new UrlBuilder(AuthMethods.DIGEST_AUTH).setPath(requestType).build();
+
+		Logger.info.accept(String.format("Navigate to URL [%s]", url));
+
+		savedStatusCode = RestAssured
+				.given().auth().digest(account.getUsername(), account.getPassword())
 				.when().get(url).statusCode();
 
 		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));

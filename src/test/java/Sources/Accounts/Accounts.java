@@ -3,16 +3,17 @@ package Sources.Accounts;
 import Utils.StringUtils;
 
 public enum Accounts {
-	CORRECT(null, null, null),
-	INCORRECT(null, null, ""),
-	INVALID("", "", "");
+	CORRECT(null, null, null, null),
+	INCORRECT(null, null, "", ""),
+	INVALID("", "", "", "");
 
-	private String username, password, bearerToken;
+	private String username, password, bearerToken, qop;
 
-	Accounts(String username, String password, String bearerToken) {
+	Accounts(String username, String password, String bearerToken, String qop) {
 		this.username = username;
 		this.password = password;
 		this.bearerToken = bearerToken;
+		this.qop = qop;
 	}
 
 	public void setUsername(String username) {
@@ -27,6 +28,10 @@ public enum Accounts {
 		this.bearerToken = bearerToken;
 	}
 
+	public void setQop(String qop) {
+		this.qop = qop;
+	}
+
 	public String getUsername() {
 		return username == null ? StringUtils.randomString.get() : username;
 	}
@@ -37,5 +42,9 @@ public enum Accounts {
 
 	public String getBearerToken() {
 		return bearerToken;
+	}
+
+	public String getQop() {
+		return qop;
 	}
 }

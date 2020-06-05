@@ -14,11 +14,6 @@ public class UrlBuilder {
 		host = "httpbin.org/";
 	}
 
-	public UrlBuilder setPath(String path) {
-		this.path = path;
-		return this;
-	}
-
 	public UrlBuilder(AuthMethods authMethod) {
 		this();
 		this.authMethod = authMethod;

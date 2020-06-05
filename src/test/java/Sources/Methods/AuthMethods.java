@@ -2,7 +2,8 @@ package Sources.Methods;
 
 public enum AuthMethods {
 	BASIC("basic-auth", null, null),
-	BEARER("bearer", "", "/");
+	BEARER("bearer", "", "/"),
+	DIGEST_AUTH("digest-auth", null, null);
 
 	private String basePath, validPath, invalidPath;
 
