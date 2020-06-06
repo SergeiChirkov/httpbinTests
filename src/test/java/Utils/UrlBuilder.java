@@ -1,13 +1,13 @@
 package Utils;
 
-import Sources.Methods.AuthMethods;
-import Sources.RequestTypes;
+import Sources.Method;
+import Sources.RequestType;
 
 public class UrlBuilder {
 	private String scheme;
 	private String host;
 	private String path;
-	private AuthMethods authMethod;
+	private Method method;
 	private String algorithm;
 	private String staleAfter;
 
@@ -18,13 +18,13 @@ public class UrlBuilder {
 		staleAfter = "";
 	}
 
-	public UrlBuilder(AuthMethods authMethod) {
+	public UrlBuilder(Method method) {
 		this();
-		this.authMethod = authMethod;
+		this.method = method;
 	}
 
-	public UrlBuilder setPath(RequestTypes requestType) {
-		this.path = requestType.getGetPathMethod().apply(authMethod);
+	public UrlBuilder setPath(RequestType requestType) {
+		this.path = requestType.getGetPathMethod().apply(method);
 		return this;
 	}
 

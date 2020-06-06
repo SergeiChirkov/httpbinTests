@@ -1,13 +1,13 @@
-package Sources.Statuses;
+package Sources;
 
-public enum Statuses {
+public enum Statuse {
 	SUCCESS (200),
 	FAIL (401),
 	ERROR (404);
 
 	int statuscode;
 
-	Statuses(int statuscode) {
+	Statuse(int statuscode) {
 		this.statuscode = statuscode;
 	}
 

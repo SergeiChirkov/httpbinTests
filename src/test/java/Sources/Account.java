@@ -1,15 +1,15 @@
-package Sources.Accounts;
+package Sources;
 
 import Utils.StringUtils;
 
-public enum Accounts {
+public enum Account {
 	CORRECT(null, null, null, null),
 	INCORRECT(null, null, "", ""),
 	INVALID("", "", "", "");
 
 	private String username, password, bearerToken, qop;
 
-	Accounts(String username, String password, String bearerToken, String qop) {
+	Account(String username, String password, String bearerToken, String qop) {
 		this.username = username;
 		this.password = password;
 		this.bearerToken = bearerToken;

@@ -5,15 +5,14 @@ import java.util.function.Supplier;
 import org.junit.Assert;
 
 import Logging.Logger;
-import Sources.Accounts.Accounts;
-import Sources.Algorithms;
-import Sources.Methods.AuthMethods;
-import Sources.RequestTypes;
-import Sources.StaleAfters;
-import Sources.Statuses.Statuses;
+import Sources.Account;
+import Sources.Algorithm;
+import Sources.Method;
+import Sources.RequestType;
+import Sources.StaleAfter;
+import Sources.Statuse;
 import Utils.StringUtils;
 import Utils.UrlBuilder;
-import io.cucumber.java.After;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
@@ -22,43 +21,48 @@ import io.restassured.RestAssured;
 public class AuthStepDefs {
 	private int savedStatusCode;
 
+	private void tearDown() {
+		savedStatusCode = 0;
+		Logger.info.accept(String.format("Saved Status Code has been reset to [%d]", savedStatusCode));
+	}
+
 	@Given("^I generate correct credentials$")
 	public void givenIGenerateCorrectCredentials() {
-		Accounts.CORRECT.setUsername(StringUtils.randomString.get());
-		Accounts.CORRECT.setPassword(StringUtils.randomString.get());
-		Accounts.CORRECT.setBearerToken(StringUtils.randomString.get());
-		Accounts.CORRECT.setQop(StringUtils.randomString.get());
+		Account.CORRECT.setUsername(StringUtils.randomString.get());
+		Account.CORRECT.setPassword(StringUtils.randomString.get());
+		Account.CORRECT.setBearerToken(StringUtils.randomString.get());
+		Account.CORRECT.setQop(StringUtils.randomString.get());
 
 		Logger.info.accept(String.format("User with username [%s] and password [%s] has been generated",
-				Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
+				Account.CORRECT.getUsername(), Account.CORRECT.getPassword()));
 	}
 
 	private Supplier<String> basicValidPath = () ->
-			String.format("/%s/%s", Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword());
+			String.format("/%s/%s", Account.CORRECT.getUsername(), Account.CORRECT.getPassword());
 
 	private Supplier<String> basicInvalidPath = () -> "/";
 
 	@Given("^I generate basic auth paths$")
 	public void givenIGenerateBasicAuthPath() {
-		AuthMethods.BASIC.setValidPath(basicValidPath.get());
-		AuthMethods.BASIC.setInvalidPath(basicInvalidPath.get());
+		Method.AUTH_BASIC.setValidPath(basicValidPath.get());
+		Method.AUTH_BASIC.setInvalidPath(basicInvalidPath.get());
 	}
 
 	@Given("^I generate hidden-basic auth paths$")
 	public void givenIGenerateHiddenBasicAuthPath() {
-		AuthMethods.HIDDEN_BASIC.setValidPath(basicValidPath.get());
-		AuthMethods.HIDDEN_BASIC.setInvalidPath(basicInvalidPath.get());
+		Method.AUTH_HIDDEN_BASIC.setValidPath(basicValidPath.get());
+		Method.AUTH_HIDDEN_BASIC.setInvalidPath(basicInvalidPath.get());
 	}
 
 	@Given("^I generate digest-auth paths$")
 	public void givenIGenerateDigestAuthAuthPath() {
-		AuthMethods.DIGEST.setValidPath(String.format("/%s/%s/%s", Accounts.CORRECT.getQop(), Accounts.CORRECT.getUsername(), Accounts.CORRECT.getPassword()));
-		AuthMethods.DIGEST.setInvalidPath("/");
+		Method.AUTH_DIGEST.setValidPath(String.format("/%s/%s/%s", Account.CORRECT.getQop(), Account.CORRECT.getUsername(), Account.CORRECT.getPassword()));
+		Method.AUTH_DIGEST.setInvalidPath("/");
 	}
 
 	@When("^I make basic auth (.*) request with (.*) credentials$")
-	public void whenIMakeBasicAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
-		String url = new UrlBuilder(AuthMethods.BASIC).setPath(requestType).build();
+	public void whenIMakeBasicAuthRequestWithCredentials(RequestType requestType, Account account) {
+		String url = new UrlBuilder(Method.AUTH_BASIC).setPath(requestType).build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
@@ -70,8 +74,8 @@ public class AuthStepDefs {
 	}
 
 	@When("^I make digest-auth (.*) request with (.*) credentials$")
-	public void whenIMakeDigestAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
-		String url = new UrlBuilder(AuthMethods.DIGEST).setPath(requestType).build();
+	public void whenIMakeDigestAuthRequestWithCredentials(RequestType requestType, Account account) {
+		String url = new UrlBuilder(Method.AUTH_DIGEST).setPath(requestType).build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
@@ -83,8 +87,8 @@ public class AuthStepDefs {
 	}
 
 	@When("^I make digest-auth (.*) request with (.*) credentials and (.*) algorithm$")
-	public void whenIMakeDigestAuthRequestWithCredentialsAndAlgorithm(RequestTypes requestType, Accounts account, Algorithms algorithm) {
-		String url = new UrlBuilder(AuthMethods.DIGEST)
+	public void whenIMakeDigestAuthRequestWithCredentialsAndAlgorithm(RequestType requestType, Account account, Algorithm algorithm) {
+		String url = new UrlBuilder(Method.AUTH_DIGEST)
 				.setPath(requestType)
 				.setAlgorithm(algorithm.getAlgorithm())
 				.build();
@@ -99,8 +103,8 @@ public class AuthStepDefs {
 	}
 
 	@When("^I make digest-auth (.*) request with (.*) credentials, (.*) algorithm and (.*) stale-after$")
-	public void whenIMakeDigestAuthRequestWithCredentialsAlgorithmAndStaleAfter(RequestTypes requestType, Accounts account, Algorithms algorithm, StaleAfters staleAfter) {
-		String url = new UrlBuilder(AuthMethods.DIGEST)
+	public void whenIMakeDigestAuthRequestWithCredentialsAlgorithmAndStaleAfter(RequestType requestType, Account account, Algorithm algorithm, StaleAfter staleAfter) {
+		String url = new UrlBuilder(Method.AUTH_DIGEST)
 				.setPath(requestType)
 				.setAlgorithm(algorithm.getAlgorithm())
 				.setStaleAfter(staleAfter.name().toLowerCase())
@@ -116,8 +120,8 @@ public class AuthStepDefs {
 	}
 
 	@When("^I make hidden basic auth (.*) request with (.*) credentials$")
-	public void whenIMakeHiddenBasicAuthRequestWithCredentials(RequestTypes requestType, Accounts account) {
-		String url = new UrlBuilder(AuthMethods.HIDDEN_BASIC).setPath(requestType).build();
+	public void whenIMakeHiddenBasicAuthRequestWithCredentials(RequestType requestType, Account account) {
+		String url = new UrlBuilder(Method.AUTH_HIDDEN_BASIC).setPath(requestType).build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
@@ -129,8 +133,8 @@ public class AuthStepDefs {
 	}
 
 	@When("^I make bearer (.*) request with (.*) credentials$")
-	public void whenIMakeBearerRequestWithCredentials(RequestTypes requestType, Accounts account) {
-		String url = new UrlBuilder(AuthMethods.BEARER).setPath(requestType).build();
+	public void whenIMakeBearerRequestWithCredentials(RequestType requestType, Account account) {
+		String url = new UrlBuilder(Method.AUTH_BEARER).setPath(requestType).build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
@@ -142,13 +146,9 @@ public class AuthStepDefs {
 	}
 
 	@Then("^I see that request (.*)$")
-	public void thenISeeResult(Statuses status) {
+	public void thenISeeResult(Statuse status) {
 		Assert.assertEquals("Status codes should match", status.getStatuscode(), savedStatusCode);
-	}
 
-	@After
-	public void tearDown() {
-		savedStatusCode = 0;
-		Logger.info.accept(String.format("Saved Status Code has been reset to [%d]", savedStatusCode));
+		tearDown();
 	}
 }

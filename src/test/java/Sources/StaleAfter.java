@@ -1,5 +1,5 @@
 package Sources;
 
-public enum StaleAfters {
+public enum StaleAfter {
 	NEVER;
 }

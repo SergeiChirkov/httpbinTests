@@ -10,7 +10,8 @@ import io.cucumber.junit.CucumberOptions;
 		features = {"src/test/resources/features/"},
 		plugin = {"json:target/cucumber/cucumber-json-report.json", "BaseTest.BaseTest"},
 		glue = {"StepDefs", "BaseTest"},
-		strict = true
+		strict = true,
+		tags = "@Base64Test"
 )
 public class Runner {
 }
