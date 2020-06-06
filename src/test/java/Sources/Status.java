@@ -1,17 +1,18 @@
 package Sources;
 
-public enum Statuse {
-	SUCCESS (200),
-	FAIL (401),
-	ERROR (404);
+public enum Status {
+	SUCCESS(200),
+	FAIL(401),
+	NOT_FOUND(404),
+	ERROR(400);
 
 	int statuscode;
 
-	Statuse(int statuscode) {
+	Status(int statuscode) {
 		this.statuscode = statuscode;
 	}
 
 	public int getStatuscode() {
 		return statuscode;
 	}
-}
+	}

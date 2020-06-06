@@ -9,6 +9,7 @@ import Sources.ExpectedResponse;
 import Sources.HttpMethod;
 import Sources.Method;
 import Sources.RequestType;
+import Sources.Status;
 import Utils.StringUtils;
 import Utils.UrlBuilder;
 import io.cucumber.java.en.Given;
@@ -20,7 +21,10 @@ import io.restassured.response.Response;
 public class DynamicDataStepDefs {
 	private int expectedByteLength;
 	private long expectedDelay;
+	private long expectedDuration;
+	private int expectedResponseCode;
 	private long actualDelay;
+	private Long actualDuration;
 
 	@Given("^I generate bytes length")
 	public void givenIGenerateBytesLength() {
@@ -39,6 +43,49 @@ public class DynamicDataStepDefs {
 		Logger.info.accept(String.format("Expected delay is [%d] sec", expectedDelay));
 	}
 
+	private Status getRandomStatus() {
+		Status[] statuses = Status.values();
+		int randomIndex = new Random().nextInt(statuses.length - 1);
+		return statuses[randomIndex];
+	}
+
+	private void setDripData(long expectedDuration, int expectedByteLength, int expectedResponseCode, long expectedDelay) {
+		Method.DRIP.setValidPath("?"
+				+ "duration=" + expectedDuration
+				+ "&numbytes=" + expectedByteLength
+				+ "&code=" + expectedResponseCode
+				+ "&delay=" + expectedDelay);
+
+		Logger.info.accept(String.format("Following data hs been generated"
+						+ "%n" + "duration = [%d]"
+						+ "%n" + "length of array = [%d]"
+						+ "%n" + "status code = [%d]"
+						+ "%n" + "delay = [%d]",
+				expectedDuration,
+				expectedByteLength,
+				expectedResponseCode,
+				expectedDelay));
+	}
+
+	@Given("^I generate (.*) data for drip request$")
+	public void givenIGenerateDripData(RequestType requestType) {
+		expectedDuration = new Random().nextInt(5);
+		expectedByteLength = new Random().nextInt(50);
+		expectedResponseCode = getRandomStatus().getStatuscode();
+		expectedDelay = new Random().nextInt(5);
+
+		switch (requestType) {
+			case VALID:
+				setDripData(expectedDuration, expectedByteLength, expectedResponseCode, expectedDelay);
+				break;
+			case INVALID:
+				setDripData(-expectedDuration, -expectedByteLength, -expectedResponseCode, -expectedDelay);
+				break;
+			default:
+				throw new RuntimeException("Unexpected Request type is used: " + requestType.name());
+		}
+	}
+
 	@Given("^I generate invalid path and set maximum expected delay$")
 	public void givenISetMaxDelay() {
 		Method.DELAY.setInvalidPath("/" + 10 + Math.abs(new Random().nextInt()));
@@ -48,19 +95,28 @@ public class DynamicDataStepDefs {
 		Logger.info.accept(String.format("Expected delay is [%d] sec", expectedDelay));
 	}
 
-	@When("^I execute (\\S+) (\\S+) http method$")
-	public void whenIExecuteSpecificHttpMethod(RequestType requestType, HttpMethod httpMethod) {
-		String url = new UrlBuilder(Method.DELAY).setPath(requestType).build();
+	@When("^I execute (\\S+) (\\S+) (\\S+) request")
+	public void whenIExecuteSpecificHttpMethod(RequestType requestType, HttpMethod httpMethod, Method method) {
+		String url = new UrlBuilder(method).setPath(requestType).build();
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
 		long startTime = System.currentTimeMillis();
-		httpMethod.factory().apply(url);
+		Response response = httpMethod.factory().apply(url);
 		long endTime = System.currentTimeMillis();
 
+		method.saveResponse(response);
 		actualDelay = (endTime - startTime) / 1000;
 
 		Logger.info.accept(String.format("Execution time is [%d] sec", actualDelay));
+
+		startTime = System.currentTimeMillis();
+		Logger.info.accept(String.format("Response has been saved and has length [%d]", response.asByteArray().length));
+		endTime = System.currentTimeMillis();
+
+		actualDuration = (endTime - startTime) / 1000;
+		Logger.info.accept(String.format("Duration time is [%d] sec", actualDuration));
+		Logger.info.accept(String.format("Status code is [%d]", response.statusCode()));
 	}
 
 	@When("^I make (\\S+) (\\S+) request$")
@@ -83,18 +139,12 @@ public class DynamicDataStepDefs {
 	@Then("^I see that (.*) has (.*) response$")
 	public void thenICompareResponses(Method method, ExpectedResponse expectedResponse) {
 		Assert.assertEquals("Responses should be equal", expectedResponse.getExpectedResponse(), method.getSavedResponse().print());
-
-		method.removeResponse();
-
-		Logger.info.accept("Actual response has been reset to [null]");
 	}
 
-	@Then("^I see that random bytes array has right length$")
-	public void thenISeeThatRandomBytesArrayHasRightLength() {
+	@Then("^I see that random bytes array for (.*) has right length$")
+	public void thenISeeThatRandomBytesArrayHasRightLength(Method method) {
 		Assert.assertEquals("Actual length of random bytes array should match with expected",
-				expectedByteLength, Method.BYTES.getSavedResponse().asByteArray().length);
-
-		Method.BYTES.removeResponse();
+				expectedByteLength, method.getSavedResponse().asByteArray().length);
 	}
 
 	@Then("^I check that response delay is correct$")
@@ -102,5 +152,17 @@ public class DynamicDataStepDefs {
 		// delta contains code execution time;
 		Assert.assertEquals("Actual response delay and expected delay should match with delta [1]",
 				expectedDelay, actualDelay, 1);
+	}
+
+	@Then("^I check that response duration is correct$")
+	public void thenICheckThatResponseDurationIsCorrect() {
+		// delta contains code execution time;
+		Assert.assertEquals("Actual response duration and expected duration should match with delta [1]",
+				expectedDuration, actualDuration, 1);
+	}
+
+	@Then("^I see that (.*) executed with correct status$")
+	public void thenICompareResults(Method method) {
+		Assert.assertEquals("Status codes should match", expectedResponseCode, method.getSavedResponse().statusCode());
 	}
 }

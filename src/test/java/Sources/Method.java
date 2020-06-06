@@ -12,6 +12,7 @@ public enum Method {
 	BASE64("base64", "/SFRUUEJJTiBpcyBhd2Vzb21l", "/" + StringUtils.randomString.get(), null),
 	BYTES("bytes", null, null, null),
 	DELAY("delay", null ,null, null),
+	DRIP("drip", null, null, null)
 	;
 
 	private String basePath, validPath, invalidPath;

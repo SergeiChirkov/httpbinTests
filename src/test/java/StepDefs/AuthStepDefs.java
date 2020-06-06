@@ -2,19 +2,15 @@ package StepDefs;
 
 import java.util.function.Supplier;
 
-import org.junit.Assert;
-
 import Logging.Logger;
 import Sources.Account;
 import Sources.Algorithm;
 import Sources.Method;
 import Sources.RequestType;
 import Sources.StaleAfter;
-import Sources.Statuse;
 import Utils.StringUtils;
 import Utils.UrlBuilder;
 import io.cucumber.java.en.Given;
-import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
@@ -149,12 +145,5 @@ public class AuthStepDefs {
 		Method.AUTH_BEARER.saveResponse(response);
 
 		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
-	}
-
-	@Then("^I see that (.*) status is (.*)$")
-	public void thenISeeResult(Method method, Statuse status) {
-		Assert.assertEquals("Status codes should match", status.getStatuscode(), method.getSavedResponse().statusCode());
-
-		method.removeResponse();
 	}
 }
