@@ -28,7 +28,7 @@ public class DynamicDataStepDefs {
 	private int numberOfLinks;
 	private int offset;
 
-	@Given("^I generate bytes length for (BYTES|RANGE) method")
+	@Given("^I generate bytes length for (BYTES|RANGE|STREAM_BYTES) method")
 	public void givenIGenerateBytesLength(Method method) {
 		expectedByteLength = new Random().nextInt(10000);
 		method.setValidPath("/" + expectedByteLength);
@@ -181,5 +181,13 @@ public class DynamicDataStepDefs {
 		String expectedContentRange = "bytes 0-" + (expectedByteLength - 1) + "/" + expectedByteLength;
 
 		Assert.assertEquals("Content-range should be correct", expectedContentRange, actualContentRange);
+	}
+
+	@Then("^I see content stream-bytes$")
+	public void thenISeeContentStramBytes() {
+		String actualContentType = Method.STREAM_BYTES.getSavedResponse().header("content-type");
+		String expectedContentType = "application/octet-stream";
+
+		Assert.assertEquals("Content-type should be octet-stream", expectedContentType, actualContentType);
 	}
 }

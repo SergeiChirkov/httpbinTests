@@ -90,3 +90,16 @@ Scenario: Test /range/{numbytes} (negative)
 Given I generate bytes length for RANGE method
 When I execute INVALID GET RANGE request
 Then I see that RANGE status is NOT_FOUND
+
+@StreamBytesTest
+Scenario: Test /stream-bytes/{n} (positive)
+Given I generate bytes length for STREAM_BYTES method
+When I execute VALID GET STREAM_BYTES request
+Then I see that random bytes array for STREAM_BYTES has right length
+And I see content stream-bytes
+
+@StreamBytesTest
+Scenario: Test /stream-bytes/{n} (negative)
+Given I generate bytes length for STREAM_BYTES method
+When I execute INVALID GET STREAM_BYTES request
+Then I see that STREAM_BYTES status is NOT_FOUND
