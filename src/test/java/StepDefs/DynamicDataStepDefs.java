@@ -11,7 +11,6 @@ import Sources.HttpMethod;
 import Sources.Method;
 import Sources.RequestType;
 import Sources.Status;
-import Utils.StringUtils;
 import Utils.UrlBuilder;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
@@ -29,11 +28,11 @@ public class DynamicDataStepDefs {
 	private int numberOfLinks;
 	private int offset;
 
-	@Given("^I generate bytes length")
-	public void givenIGenerateBytesLength() {
+	@Given("^I generate bytes length for (BYTES|RANGE) method")
+	public void givenIGenerateBytesLength(Method method) {
 		expectedByteLength = new Random().nextInt(10000);
-		Method.BYTES.setValidPath("/" + expectedByteLength);
-		Method.BYTES.setInvalidPath("/" + StringUtils.randomString.get());
+		method.setValidPath("/" + expectedByteLength);
+		method.setInvalidPath("/" + -expectedByteLength);
 
 		Logger.info.accept(String.format("Expected length of random byte array is [%d]", expectedByteLength));
 	}
@@ -174,5 +173,13 @@ public class DynamicDataStepDefs {
 		if (offset > 0) {
 			Assert.assertEquals("Opened link doesn't have link", Integer.parseInt(links.get(offset - 1).value()), offset - 1);
 		}
+	}
+
+	@Then("^I see content range$")
+	public void thenISeeContentRange() {
+		String actualContentRange = Method.RANGE.getSavedResponse().header("Content-range");
+		String expectedContentRange = "bytes 0-" + (expectedByteLength - 1) + "/" + expectedByteLength;
+
+		Assert.assertEquals("Content-range should be correct", expectedContentRange, actualContentRange);
 	}
 }

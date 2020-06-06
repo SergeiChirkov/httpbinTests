@@ -13,13 +13,13 @@ Examples:
 
 @ByteTest
 Scenario: Test /bytes/{n} (positive)
-Given I generate bytes length
+Given I generate bytes length for BYTES method
 When I execute VALID GET BYTES request
 Then I see that random bytes array for BYTES has right length
 
 @ByteTest
 Scenario: Test /bytes/{n} (negative)
-Given I generate bytes length
+Given I generate bytes length for BYTES method
 When I execute INVALID GET BYTES request
 Then I see that BYTES status is NOT_FOUND
 
@@ -77,3 +77,16 @@ Scenario: Test /links/{n}/{offset} (negative)
 Given I generate links
 When I execute INVALID GET LINKS request
 Then I see that LINKS status is NOT_FOUND
+
+@RangeTest
+Scenario: Test /range/{numbytes} (positive)
+Given I generate bytes length for RANGE method
+When I execute VALID GET RANGE request
+Then I see that random bytes array for RANGE has right length
+And I see content range
+
+@RangeTest
+Scenario: Test /range/{numbytes} (negative)
+Given I generate bytes length for RANGE method
+When I execute INVALID GET RANGE request
+Then I see that RANGE status is NOT_FOUND

@@ -14,6 +14,7 @@ public enum Method {
 	DELAY("delay", null ,null, null),
 	DRIP("drip", null, null, null),
 	LINKS("links", null, null, null),
+	RANGE("range", null, null, null),
 	;
 
 	private String basePath, validPath, invalidPath;
