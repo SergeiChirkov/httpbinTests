@@ -16,6 +16,7 @@ public enum Method {
 	LINKS("links", null, null, null),
 	RANGE("range", null, null, null),
 	STREAM_BYTES("stream-bytes", null, null, null),
+	STREAM("stream", null, null, null),
 	;
 
 	private String basePath, validPath, invalidPath;

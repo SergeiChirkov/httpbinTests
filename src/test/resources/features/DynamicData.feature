@@ -103,3 +103,15 @@ Scenario: Test /stream-bytes/{n} (negative)
 Given I generate bytes length for STREAM_BYTES method
 When I execute INVALID GET STREAM_BYTES request
 Then I see that STREAM_BYTES status is NOT_FOUND
+
+@StreamTest
+Scenario: Test /stream/{n} (positive)
+Given I generate stream number for STREAM method
+When I execute VALID GET STREAM request
+Then I see correct numbers of streams
+
+@StreamTest
+Scenario: Test /stream/{n} (negative)
+Given I generate stream number for STREAM method
+When I execute INVALID GET STREAM request
+Then I see that STREAM status is NOT_FOUND

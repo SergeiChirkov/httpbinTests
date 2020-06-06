@@ -15,6 +15,7 @@ import Utils.UrlBuilder;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.restassured.path.json.JsonPath;
 import io.restassured.path.xml.element.Node;
 import io.restassured.response.Response;
 
@@ -27,6 +28,7 @@ public class DynamicDataStepDefs {
 	private Long actualDuration;
 	private int numberOfLinks;
 	private int offset;
+	private int expectedStreamNumber;
 
 	@Given("^I generate bytes length for (BYTES|RANGE|STREAM_BYTES) method")
 	public void givenIGenerateBytesLength(Method method) {
@@ -35,6 +37,15 @@ public class DynamicDataStepDefs {
 		method.setInvalidPath("/" + -expectedByteLength);
 
 		Logger.info.accept(String.format("Expected length of random byte array is [%d]", expectedByteLength));
+	}
+
+	@Given("^I generate stream number for (STREAM) method$")
+	public void givenIGenerateStreamNumberForMethod(Method method) {
+		expectedStreamNumber = 10 + new Random().nextInt(10);
+		method.setValidPath("/" + expectedStreamNumber);
+		method.setInvalidPath("/" + -expectedStreamNumber);
+
+		Logger.info.accept(String.format("Expected number of streams is [%d]", expectedStreamNumber));
 	}
 
 	@Given("^I generate delay in seconds$")
@@ -164,7 +175,7 @@ public class DynamicDataStepDefs {
 
 	@Then("^I see correct numbers of links$")
 	public void thenISeeCorrectNumberOfLinks() {
-		List<Node> links = Method.LINKS.getSavedResponse().body().xmlPath().get().children().getNode("body").children().list();
+		List<Node> links = Method.LINKS.getSavedResponse().body().htmlPath().get().children().getNode("body").children().list();
 
 		Assert.assertEquals("Number of links should be as [generated - 1]", links.size(), numberOfLinks - 1);
 
@@ -173,6 +184,16 @@ public class DynamicDataStepDefs {
 		if (offset > 0) {
 			Assert.assertEquals("Opened link doesn't have link", Integer.parseInt(links.get(offset - 1).value()), offset - 1);
 		}
+	}
+
+	@Then("^I see correct numbers of streams$")
+	public void thenISeeCorrectNumbersOfStreams() {
+		//приложение генерирует невалидный multiple json написал свой костыль для правки
+		//дааа я знаю что костыль, но иначе вообще стремно было бы
+		String response = "[" + Method.STREAM.getSavedResponse().body().print().replaceAll("\\}\\n\\{", "},{") + "]";
+
+		int actualStreamNumber = JsonPath.from(response).getList("$4").size();
+		Assert.assertEquals("Number of streams should match.", expectedStreamNumber, actualStreamNumber);
 	}
 
 	@Then("^I see content range$")
