@@ -8,6 +8,7 @@ public enum Method {
 	AUTH_DIGEST("digest-auth", null, null),
 	AUTH_HIDDEN_BASIC("hidden-basic-auth", null, null),
 	BASE64("base64", "/SFRUUEJJTiBpcyBhd2Vzb21l", "/" + StringUtils.randomString.get()),
+	BYTES("bytes", null, null)
 	;
 
 	private String basePath, validPath, invalidPath;

@@ -1,17 +1,22 @@
 package Sources;
 
 public enum ExpectedResponse {
-	SUCCESSFUL("HTTPBIN is awesome"),
-	FAILED("Incorrect Base64 data try: SFRUUEJJTiBpcyBhd2Vzb21l")
+	HTTPBIN_IS_AWESOM("HTTPBIN is awesome"),
+	INCORRECT_BASE64_DATA("Incorrect Base64 data try: SFRUUEJJTiBpcyBhd2Vzb21l"),
+	BYTES_LENGTH("not set"),
 	;
 
-	String responseText;
+	String expectedResponse;
 
-	ExpectedResponse(String responseText) {
-		this.responseText = responseText;
+	ExpectedResponse(String expectedResponse) {
+		this.expectedResponse = expectedResponse;
 	}
 
-	public String getResponseText() {
-		return responseText;
+	public String getExpectedResponse() {
+		return expectedResponse;
+	}
+
+	public void setExpectedResponse(String expectedResponse) {
+		this.expectedResponse = expectedResponse;
 	}
 }
