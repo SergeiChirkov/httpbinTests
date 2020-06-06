@@ -11,7 +11,7 @@ import io.cucumber.junit.CucumberOptions;
 		plugin = {"json:target/cucumber/cucumber-json-report.json", "BaseTest.BaseTest"},
 		glue = {"StepDefs", "BaseTest"},
 		strict = true,
-		tags = "@UUIDTest"
+		tags = "@Regression"
 )
 public class Runner {
 }
