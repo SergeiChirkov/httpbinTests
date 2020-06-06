@@ -3,7 +3,6 @@ package Sources;
 public enum ExpectedResponse {
 	HTTPBIN_IS_AWESOM("HTTPBIN is awesome"),
 	INCORRECT_BASE64_DATA("Incorrect Base64 data try: SFRUUEJJTiBpcyBhd2Vzb21l"),
-	BYTES_LENGTH("not set"),
 	;
 
 	String expectedResponse;

@@ -6,7 +6,7 @@ Scenario Outline: Test /basic-auth/{user}/{passwd}
 Given I generate correct credentials
 And I generate basic auth paths
 When I make basic auth <type> request with <credentialsType> credentials
-Then I see that request <status>
+Then I see that AUTH_BASIC status is <status>
 
 Examples:
 | credentialsType | type    | status  |
@@ -17,7 +17,7 @@ Examples:
 @BearerAuthTest
 Scenario Outline: Test /bearer
 When I make bearer <type> request with <credentialsType> credentials
-Then I see that request <status>
+Then I see that AUTH_BEARER status is <status>
 
 Examples:
 | credentialsType | type    | status  |
@@ -30,7 +30,7 @@ Scenario Outline: Test /digest-auth/{qop}/{user}/{passwd}
 Given I generate correct credentials
 And I generate digest-auth paths
 When I make digest-auth <type> request with <credentialsType> credentials
-Then I see that request <status>
+Then I see that AUTH_DIGEST status is <status>
 
 Examples:
 | credentialsType | type    | status  |
@@ -43,7 +43,7 @@ Scenario Outline: Test /digest-auth/{qop}/{user}/{passwd}/{algorithm}
 Given I generate correct credentials
 And I generate digest-auth paths
 When I make digest-auth <type> request with <credentialsType> credentials and <algorithm> algorithm
-Then I see that request <status>
+Then I see that AUTH_DIGEST status is <status>
 
 Examples:
 | credentialsType | type    | algorithm | status  |
@@ -62,7 +62,7 @@ Scenario Outline: Test /digest-auth/{qop}/{user}/{passwd}/{algorithm}/{stale_aft
 Given I generate correct credentials
 And I generate digest-auth paths
 When I make digest-auth <type> request with <credentialsType> credentials, <algorithm> algorithm and NEVER stale-after
-Then I see that request <status>
+Then I see that AUTH_DIGEST status is <status>
 
 Examples:
 | credentialsType | type    | algorithm | status  |
@@ -81,7 +81,7 @@ Scenario Outline: Test /hidden-basic-auth/{user}/{passwd}
 Given I generate correct credentials
 And I generate hidden-basic auth paths
 When I make hidden basic auth <type> request with <credentialsType> credentials
-Then I see that request <status>
+Then I see that AUTH_HIDDEN_BASIC status is <status>
 
 Examples:
 | credentialsType | type    | status  |

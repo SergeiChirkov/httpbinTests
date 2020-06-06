@@ -17,15 +17,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 
 public class AuthStepDefs {
-	private int savedStatusCode;
-
-	private void tearDown() {
-		savedStatusCode = 0;
-		Logger.info.accept(String.format("Saved Status Code has been reset to [%d]", savedStatusCode));
-	}
-
 	@Given("^I generate correct credentials$")
 	public void givenIGenerateCorrectCredentials() {
 		Account.CORRECT.setUsername(StringUtils.randomString.get());
@@ -66,11 +60,13 @@ public class AuthStepDefs {
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
-		savedStatusCode = RestAssured
+		Response response = RestAssured
 				.given().auth().basic(account.getUsername(), account.getPassword())
-				.when().get(url).statusCode();
+				.when().get(url);
 
-		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+		Method.AUTH_BASIC.saveResponse(response);
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
 	}
 
 	@When("^I make digest-auth (.*) request with (.*) credentials$")
@@ -79,11 +75,13 @@ public class AuthStepDefs {
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
-		savedStatusCode = RestAssured
+		Response response = RestAssured
 				.given().auth().digest(account.getUsername(), account.getPassword())
-				.when().get(url).statusCode();
+				.when().get(url);
 
-		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+		Method.AUTH_DIGEST.saveResponse(response);
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
 	}
 
 	@When("^I make digest-auth (.*) request with (.*) credentials and (.*) algorithm$")
@@ -95,11 +93,13 @@ public class AuthStepDefs {
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
-		savedStatusCode = RestAssured
+		Response response = RestAssured
 				.given().auth().digest(account.getUsername(), account.getPassword())
-				.when().get(url).statusCode();
+				.when().get(url);
 
-		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+		Method.AUTH_DIGEST.saveResponse(response);
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
 	}
 
 	@When("^I make digest-auth (.*) request with (.*) credentials, (.*) algorithm and (.*) stale-after$")
@@ -112,11 +112,13 @@ public class AuthStepDefs {
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
-		savedStatusCode = RestAssured
+		Response response = RestAssured
 				.given().auth().digest(account.getUsername(), account.getPassword())
-				.when().get(url).statusCode();
+				.when().get(url);
 
-		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+		Method.AUTH_DIGEST.saveResponse(response);
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
 	}
 
 	@When("^I make hidden basic auth (.*) request with (.*) credentials$")
@@ -125,11 +127,13 @@ public class AuthStepDefs {
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
-		savedStatusCode = RestAssured
+		Response response = RestAssured
 				.given().auth().preemptive().basic(account.getUsername(), account.getPassword())
-				.when().get(url).statusCode();
+				.when().get(url);
 
-		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+		Method.AUTH_HIDDEN_BASIC.saveResponse(response);
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
 	}
 
 	@When("^I make bearer (.*) request with (.*) credentials$")
@@ -138,17 +142,19 @@ public class AuthStepDefs {
 
 		Logger.info.accept(String.format("Navigate to URL [%s]", url));
 
-		savedStatusCode = RestAssured
+		Response response = RestAssured
 				.given().auth().oauth2(account.getBearerToken())
-				.when().get(url).statusCode();
+				.when().get(url);
 
-		Logger.info.accept(String.format("Status code [%d] has been saved", savedStatusCode));
+		Method.AUTH_BEARER.saveResponse(response);
+
+		Logger.info.accept(String.format("Status code [%d] has been saved", response.statusCode()));
 	}
 
-	@Then("^I see that request (.*)$")
-	public void thenISeeResult(Statuse status) {
-		Assert.assertEquals("Status codes should match", status.getStatuscode(), savedStatusCode);
+	@Then("^I see that (.*) status is (.*)$")
+	public void thenISeeResult(Method method, Statuse status) {
+		Assert.assertEquals("Status codes should match", status.getStatuscode(), method.getSavedResponse().statusCode());
 
-		tearDown();
+		method.removeResponse();
 	}
 }
