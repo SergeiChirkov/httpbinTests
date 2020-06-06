@@ -1,5 +1,6 @@
 package StepDefs;
 
+import java.util.List;
 import java.util.Random;
 
 import org.junit.Assert;
@@ -15,7 +16,7 @@ import Utils.UrlBuilder;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
-import io.restassured.RestAssured;
+import io.restassured.path.xml.element.Node;
 import io.restassured.response.Response;
 
 public class DynamicDataStepDefs {
@@ -25,6 +26,8 @@ public class DynamicDataStepDefs {
 	private int expectedResponseCode;
 	private long actualDelay;
 	private Long actualDuration;
+	private int numberOfLinks;
+	private int offset;
 
 	@Given("^I generate bytes length")
 	public void givenIGenerateBytesLength() {
@@ -41,6 +44,17 @@ public class DynamicDataStepDefs {
 		Method.DELAY.setValidPath("/" + expectedDelay);
 
 		Logger.info.accept(String.format("Expected delay is [%d] sec", expectedDelay));
+	}
+
+	@Given("^I generate links$")
+	public void givenIGenerateLinks() {
+		numberOfLinks = new Random().nextInt(15);
+		offset = new Random().nextInt(numberOfLinks);
+
+		Method.LINKS.setValidPath(String.format("/%d/%d", numberOfLinks, offset));
+		Method.LINKS.setInvalidPath(String.format("/%d/%d", -numberOfLinks, offset));
+
+		Logger.info.accept(String.format("Generate [%d] links and offset [%d]", numberOfLinks, offset));
 	}
 
 	private Status getRandomStatus() {
@@ -119,23 +133,6 @@ public class DynamicDataStepDefs {
 		Logger.info.accept(String.format("Status code is [%d]", response.statusCode()));
 	}
 
-	@When("^I make (\\S+) (\\S+) request$")
-	public void whenIMakeBase64RequestWithData(RequestType requestType, Method method) {
-		String url = new UrlBuilder(method).setPath(requestType).build();
-
-		Logger.info.accept(String.format("Navigate to URL [%s]", url));
-
-		Response response = RestAssured.given().get(url);
-
-		method.saveResponse(response);
-
-		if (!method.equals(Method.BYTES)) {
-			Logger.info.accept(String.format("Response [%s] has been saved", response.print()));
-		} else {
-			Logger.info.accept(String.format("Response status code is [%s]", response.statusCode()));
-		}
-	}
-
 	@Then("^I see that (.*) has (.*) response$")
 	public void thenICompareResponses(Method method, ExpectedResponse expectedResponse) {
 		Assert.assertEquals("Responses should be equal", expectedResponse.getExpectedResponse(), method.getSavedResponse().print());
@@ -164,5 +161,18 @@ public class DynamicDataStepDefs {
 	@Then("^I see that (.*) executed with correct status$")
 	public void thenICompareResults(Method method) {
 		Assert.assertEquals("Status codes should match", expectedResponseCode, method.getSavedResponse().statusCode());
+	}
+
+	@Then("^I see correct numbers of links$")
+	public void thenISeeCorrectNumberOfLinks() {
+		List<Node> links = Method.LINKS.getSavedResponse().body().xmlPath().get().children().getNode("body").children().list();
+
+		Assert.assertEquals("Number of links should be as [generated - 1]", links.size(), numberOfLinks - 1);
+
+		Assert.assertEquals("Opened link doesn't have link", Integer.parseInt(links.get(offset).value()), offset + 1);
+
+		if (offset > 0) {
+			Assert.assertEquals("Opened link doesn't have link", Integer.parseInt(links.get(offset - 1).value()), offset - 1);
+		}
 	}
 }

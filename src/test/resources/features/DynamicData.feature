@@ -3,7 +3,7 @@ Feature: Test dynamic data
 
 @Base64Test
 Scenario Outline: Test /base64/{value}
-When I make <type> BASE64 request
+When I execute <type> GET BASE64 request
 Then I see that BASE64 has <expected> response
 
 Examples:
@@ -14,13 +14,13 @@ Examples:
 @ByteTest
 Scenario: Test /bytes/{n} (positive)
 Given I generate bytes length
-When I make VALID BYTES request
+When I execute VALID GET BYTES request
 Then I see that random bytes array for BYTES has right length
 
 @ByteTest
 Scenario: Test /bytes/{n} (negative)
 Given I generate bytes length
-When I make INVALID BYTES request
+When I execute INVALID GET BYTES request
 Then I see that BYTES status is NOT_FOUND
 
 @DelayTest
@@ -65,3 +65,15 @@ Scenario: Test /drip (negative)
 Given I generate INVALID data for drip request
 When I execute VALID GET DRIP request
 Then I see that DRIP status is ERROR
+
+@LinksTest
+Scenario: Test /links/{n}/{offset} (positive)
+Given I generate links
+When I execute VALID GET LINKS request
+Then I see correct numbers of links
+
+@LinksTest
+Scenario: Test /links/{n}/{offset} (negative)
+Given I generate links
+When I execute INVALID GET LINKS request
+Then I see that LINKS status is NOT_FOUND
