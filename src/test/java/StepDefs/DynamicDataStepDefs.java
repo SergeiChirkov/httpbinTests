@@ -2,6 +2,8 @@ package StepDefs;
 
 import java.util.List;
 import java.util.Random;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.junit.Assert;
 
@@ -194,6 +196,20 @@ public class DynamicDataStepDefs {
 
 		int actualStreamNumber = JsonPath.from(response).getList("$4").size();
 		Assert.assertEquals("Number of streams should match.", expectedStreamNumber, actualStreamNumber);
+	}
+
+	@Then("^i check UUID$")
+	public void thenICheckUUID() {
+		String uuid = Method.UUID.getSavedResponse().body().jsonPath().get("uuid");
+
+		Logger.info.accept(String.format("uuid = [%s]", uuid));
+
+		Pattern pattern = Pattern.compile("[a-fA-F0-9]{8}-([a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}");
+		Matcher matcher = pattern.matcher(uuid);
+
+		Logger.info.accept(String.format("Regexp to match with uuid is [%s]", pattern.pattern()));
+
+		Assert.assertTrue("UUID should match with regexp", matcher.find());
 	}
 
 	@Then("^I see content range$")

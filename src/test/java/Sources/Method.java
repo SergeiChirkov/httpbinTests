@@ -17,6 +17,7 @@ public enum Method {
 	RANGE("range", null, null, null),
 	STREAM_BYTES("stream-bytes", null, null, null),
 	STREAM("stream", null, null, null),
+	UUID("uuid", "", "", null)
 	;
 
 	private String basePath, validPath, invalidPath;

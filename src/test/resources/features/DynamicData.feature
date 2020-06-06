@@ -115,3 +115,9 @@ Scenario: Test /stream/{n} (negative)
 Given I generate stream number for STREAM method
 When I execute INVALID GET STREAM request
 Then I see that STREAM status is NOT_FOUND
+
+@UUIDTest
+Scenario: Test /uuid
+When I execute VALID GET UUID request
+Then I see that UUID status is SUCCESS
+And i check UUID
