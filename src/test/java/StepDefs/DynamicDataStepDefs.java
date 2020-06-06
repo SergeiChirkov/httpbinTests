@@ -35,7 +35,15 @@ public class DynamicDataStepDefs {
 	public void givenIGenerateDelay() {
 		expectedDelay = new Random().nextInt(10);
 		Method.DELAY.setValidPath("/" + expectedDelay);
-		Method.DELAY.setInvalidPath("/" + StringUtils.randomString.get());
+
+		Logger.info.accept(String.format("Expected delay is [%d] sec", expectedDelay));
+	}
+
+	@Given("^I generate invalid path and set maximum expected delay$")
+	public void givenISetMaxDelay() {
+		Method.DELAY.setInvalidPath("/" + 10 + Math.abs(new Random().nextInt()));
+
+		expectedDelay = 10;
 
 		Logger.info.accept(String.format("Expected delay is [%d] sec", expectedDelay));
 	}

@@ -26,13 +26,27 @@ Then I see that BYTES status is ERROR
 @DelayTest
 Scenario Outline: Test /delay/{delay}
 Given I generate delay in seconds
-When I execute <type> <httpMethod> http method
+When I execute VALID <httpMethod> http method
 Then I check that response delay is correct
 
 Examples:
-| type    | httpMethod |
-| VALID   | DELETE     |
-| VALID   | GET        |
-| VALID   | PATCH      |
-| VALID   | POST       |
-| VALID   | PUT        |
+| httpMethod |
+| DELETE     |
+| GET        |
+| PATCH      |
+| POST       |
+| PUT        |
+
+@DelayTest
+Scenario Outline: Test /delay/{delay}
+Given I generate invalid path and set maximum expected delay
+When I execute INVALID <httpMethod> http method
+Then I check that response delay is correct
+
+Examples:
+| httpMethod |
+| DELETE     |
+| GET        |
+| PATCH      |
+| POST       |
+| PUT        |
